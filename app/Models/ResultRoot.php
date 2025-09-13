@@ -19,6 +19,7 @@ class ResultRoot extends Model
         'grading_system_id',
         'next_term',
         'section_address',
+        'logo',
     ];
 
 

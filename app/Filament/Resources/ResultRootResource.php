@@ -26,6 +26,8 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 use App\Filament\Resources\ResultRootResource\RelationManagers;
 use App\Filament\Resources\ResultRootResource\Pages\ViewResultsPage;
+use Faker\Core\File;
+use Filament\Forms\Components\FileUpload;
 
 class ResultRootResource extends Resource
 {
@@ -70,6 +72,11 @@ class ResultRootResource extends Resource
                             ->required()
                             ->placeholder('Enter the address of the section (e.g., Senior Section, 123 Main St, City, Country)')
                             ->helperText('This address will appear on the result sheets to identify the section.')
+                            ->columnSpanFull(),
+                        FileUpload::make('logo')
+                            ->label('Section Logo')
+                            ->image()
+                            ->required()
                             ->columnSpanFull(),
 
                         Section::make('Exam Score Columns')

@@ -124,7 +124,7 @@
                     <div class="border p-6 mb-6 rounded-lg shadow-lg" style="margin-top:15px; margin-bottom:15px;">
                         <div class="mb-4 flex justify-between border p-2">
                             <div class="school_logo">
-                                <img src="{{ Storage::url($school_logo) }}" alt="Logo" class="logo-img" style="height: 70px; border-radius: 10%;">
+                                <img src="{{ $record->logo ? Storage::url($record->logo) : Storage::url($school_logo) }}" alt="Logo" class="logo-img" style="height: 70px; border-radius: 10%;">
                             </div>
                           <div class="text-center">  <h2 class="font-bold" style="font-size: 2.7rem;">{{ $schoolDetails['school_name'] }}</h2>
                             <p><b>Address: </b> {{ $record->section_address ?? $schoolDetails['school_address'] }}</p>
