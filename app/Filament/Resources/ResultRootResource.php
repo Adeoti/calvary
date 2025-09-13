@@ -69,14 +69,12 @@ class ResultRootResource extends Resource
                             ->columnSpanFull(),
                         Textarea::make('section_address')
                             ->label('Section Address')
-                            ->required()
                             ->placeholder('Enter the address of the section (e.g., Senior Section, 123 Main St, City, Country)')
                             ->helperText('This address will appear on the result sheets to identify the section.')
                             ->columnSpanFull(),
                         FileUpload::make('logo')
                             ->label('Section Logo')
                             ->image()
-                            ->required()
                             ->columnSpanFull(),
 
                         Section::make('Exam Score Columns')
