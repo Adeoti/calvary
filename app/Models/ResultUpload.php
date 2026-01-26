@@ -44,7 +44,10 @@ class ResultUpload extends Model
         });
     }
 
-
+    public function subject()
+    {
+        return $this->belongsTo(Subject::class, 'subject_id');
+    }
     public function processCsvFile()
     {
         // Ensure there's a file path before processing
