@@ -52,7 +52,7 @@ class Broadsheet extends Model
     {
         $classId = $this->class_id;
         $resultRootIds = $this->result_root_ids ?? [];
-        
+
         if (empty($resultRootIds)) {
             return null;
         }
@@ -94,15 +94,26 @@ class Broadsheet extends Model
             // Process each subject
             foreach ($subjects as $subject) {
                 $subjectId = $subject->id;
-                
+
                 // Find result uploads for this student and subject
                 $subjectUploads = $resultUploads->where('subject_id', $subjectId);
-                
+
                 $subjectTotal = 0;
                 $subjectCount = 0;
 
                 foreach ($subjectUploads as $upload) {
-                    $cardItems = json_decode($upload->card_items, true);
+                    $cardItems = $upload->card_items;
+
+                    // Handle both string (JSON) and array formats
+                    if (is_string($cardItems)) {
+                        $cardItems = json_decode($cardItems, true);
+                    }
+
+                    // Ensure we have an array
+                    if (!is_array($cardItems)) {
+                        $cardItems = [];
+                    }
+
                     if (isset($cardItems[$studentId])) {
                         $subjectTotal += $cardItems[$studentId]['total'] ?? 0;
                         $subjectCount++;
@@ -133,16 +144,16 @@ class Broadsheet extends Model
             }
 
             $studentData['total'] = round($studentTotal, 2);
-            
+
             // FIXED: Calculate average based on subjects where student actually has scores
             // Only divide by $subjectsWithScores, not total subjects in class
             $studentData['average'] = $subjectsWithScores > 0 ? round($studentTotal / $subjectsWithScores, 2) : 0;
-            
+
             $broadsheetData[] = $studentData;
         }
 
         // Sort by total score in descending order
-        usort($broadsheetData, function($a, $b) {
+        usort($broadsheetData, function ($a, $b) {
             return $b['total'] <=> $a['total'];
         });
 
@@ -153,7 +164,7 @@ class Broadsheet extends Model
 
         foreach ($broadsheetData as $index => &$student) {
             $student['sno'] = $index + 1;
-            
+
             if ($previousTotal === null || $student['total'] < $previousTotal) {
                 $position = $index + 1;
                 $samePositionCount = 0;
@@ -197,9 +208,15 @@ class Broadsheet extends Model
         $suffix = 'th';
         if (!in_array(($position % 100), [11, 12, 13])) {
             switch ($position % 10) {
-                case 1: $suffix = 'st'; break;
-                case 2: $suffix = 'nd'; break;
-                case 3: $suffix = 'rd'; break;
+                case 1:
+                    $suffix = 'st';
+                    break;
+                case 2:
+                    $suffix = 'nd';
+                    break;
+                case 3:
+                    $suffix = 'rd';
+                    break;
             }
         }
         return $position . $suffix;
@@ -214,5 +231,4 @@ class Broadsheet extends Model
             }
         });
     }
-
 }
