@@ -21,13 +21,21 @@ class ResultUpload extends Model
         return $this->belongsTo(SchoolClass::class, 'class_id');
     }
 
+    public function subject()
+    {
+        return $this->belongsTo(Subject::class, 'subject_id');
+    }
+
 
     protected $fillable = [
         'result_root_id',
         'file_path',
         'card_items',
         'subject_id',
-        'class_id'
+        'class_id',
+        'entry_type',
+        'created_by',
+        'updated_by',
     ];
 
     protected $casts = [
@@ -44,10 +52,17 @@ class ResultUpload extends Model
         });
     }
 
-    public function subject()
+
+    public function creator()
     {
-        return $this->belongsTo(Subject::class, 'subject_id');
+        return $this->belongsTo(User::class, 'created_by');
     }
+
+    public function updater()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
     public function processCsvFile()
     {
         // Ensure there's a file path before processing
