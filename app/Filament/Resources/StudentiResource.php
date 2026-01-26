@@ -143,8 +143,8 @@ class StudentiResource extends Resource
                        
                         TextInput::make('roll_number')
                             ->label('Registration Number')
-                            ->visibleOn('create')
-                            // ->unique(Student::class, 'roll_number')
+                            // ->visibleOn('create')
+                            ->unique(Student::class, 'roll_number', ignoreRecord: true)
                             ->required(),
                         DatePicker::make('admission_date')
                             ->label('Admission Date')

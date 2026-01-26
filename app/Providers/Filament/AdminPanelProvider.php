@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\AdminCustomDashboard;
+use App\Filament\Resources\BroadsheetResource\Pages\ViewBroadsheet;
 use App\Models\Setting;
 use Filament\Enums\ThemeMode;
 use Filament\Http\Middleware\Authenticate;
@@ -33,6 +34,7 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id('admin')
+            ->darkMode(false)
             ->path('admin')
             ->login()
             ->sidebarCollapsibleOnDesktop()
@@ -42,13 +44,14 @@ class AdminPanelProvider extends PanelProvider
                 'warning' => Color::Yellow,
                 'purple' => Color::Purple,
             ])
-            ->defaultThemeMode(ThemeMode::Dark)
+            ->defaultThemeMode(ThemeMode::Light)
             ->brandName($schoolDetails['school_name'])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
                 //Pages\Dashboard::class,
-                AdminCustomDashboard::class
+                AdminCustomDashboard::class,
+                // ViewBroadsheet::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
