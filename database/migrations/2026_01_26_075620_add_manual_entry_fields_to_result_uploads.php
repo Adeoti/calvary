@@ -30,27 +30,23 @@ return new class extends Migration
                     ->nullOnDelete();
             }
 
+            // Make sure doctrine/dbal is installed for change()
             $table->json('file_path')->nullable()->change();
 
+            // ✅ Normal index only (NO uniqueness)
             $table->index(
                 ['result_root_id', 'class_id', 'subject_id', 'entry_type'],
                 'ru_root_class_subject_type_idx'
             );
-
-            $table->unique(
-                ['result_root_id', 'class_id', 'subject_id', 'entry_type'],
-                'ru_root_class_subject_type_unique'
-            );
         });
     }
-
 
     public function down(): void
     {
         Schema::table('result_uploads', function (Blueprint $table) {
 
+            // Drop index
             $table->dropIndex('ru_root_class_subject_type_idx');
-            $table->dropUnique('ru_root_class_subject_type_unique');
 
             if (Schema::hasColumn('result_uploads', 'updated_by')) {
                 $table->dropConstrainedForeignId('updated_by');
