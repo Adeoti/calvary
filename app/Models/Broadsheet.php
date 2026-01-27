@@ -145,8 +145,6 @@ class Broadsheet extends Model
 
             $studentData['total'] = round($studentTotal, 2);
 
-            // FIXED: Calculate average based on subjects where student actually has scores
-            // Only divide by $subjectsWithScores, not total subjects in class
             $studentData['average'] = $subjectsWithScores > 0 ? round($studentTotal / $subjectsWithScores, 2) : 0;
 
             $broadsheetData[] = $studentData;
