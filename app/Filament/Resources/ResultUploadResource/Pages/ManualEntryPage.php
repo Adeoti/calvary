@@ -11,6 +11,7 @@ use App\Models\ResultUpload;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class ManualEntryPage extends Page
 {
@@ -163,6 +164,15 @@ class ManualEntryPage extends Page
             );
             
             DB::commit();
+
+            // Log the result
+            Log::info('Manual entry saved', [
+                'result_root_id' => $validated['result_root_id'],
+                'class_id' => $validated['class_id'],
+                'subject_id' => $validated['subject_id'],
+                'scores' => $validated['scores'],
+                'processed_by' => Auth::id(),
+            ]);
             
             return redirect()
                 ->route('filament.admin.resources.result-uploads.index')
@@ -170,7 +180,16 @@ class ManualEntryPage extends Page
             
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Error saving scores: ' . $e->getMessage());
+            Log::error('Error saving manual entry', [
+                'error' => $e->getMessage(),
+                'result_root_id' => $validated['result_root_id'] ?? null,
+                'class_id' => $validated['class_id'] ?? null,
+                'subject_id' => $validated['subject_id'] ?? null,
+                'processed_by' => Auth::id(),
+            ]);
+            return redirect()
+                ->route('filament.admin.resources.result-uploads.index')
+                ->with('error', 'Error saving manual entry: ' . $e->getMessage());
         }
     }
     
