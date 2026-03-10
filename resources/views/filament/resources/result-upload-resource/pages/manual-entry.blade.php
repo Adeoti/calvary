@@ -1,7 +1,7 @@
 @php
-use App\Models\ResultRoot;
-use App\Models\SchoolClass;
-use App\Models\Subject;
+    use App\Models\ResultRoot;
+    use App\Models\SchoolClass;
+    use App\Models\Subject;
 @endphp
 
 <x-filament-panels::page>
@@ -152,15 +152,15 @@ use App\Models\Subject;
                                         </td>
                                         @foreach ($examColumns as $column)
                                             @php
-                                                $columnKey = $column['label'] . ' - ' . $column['overall_score'];
+                                                $rawKey = $column['label'] . ' - ' . $column['overall_score'];
+                                                $integerKey = $column['label'] . ' - ' . (int) $column['overall_score'];
                                                 $maxScore = (int) $column['overall_score'];
-                                                
-                                                // Check for existing data with CSV format key
-                                                if (isset($studentScores[$columnKey])) {
-                                                    $currentScore = $studentScores[$columnKey];
-                                                } 
-                                                // Fallback to old format (just label) for backward compatibility
-                                                elseif (isset($studentScores[$column['label']])) {
+
+                                                if (isset($studentScores[$rawKey])) {
+                                                    $currentScore = $studentScores[$rawKey];
+                                                } elseif (isset($studentScores[$integerKey])) {
+                                                    $currentScore = $studentScores[$integerKey];
+                                                } elseif (isset($studentScores[$column['label']])) {
                                                     $currentScore = $studentScores[$column['label']];
                                                 } else {
                                                     $currentScore = '';
@@ -266,4 +266,4 @@ use App\Models\Subject;
             </div>
         @endif
     </div>
-</x-filament-panels::page>a
+</x-filament-panels::page>
