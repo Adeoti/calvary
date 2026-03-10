@@ -60,6 +60,15 @@ class ManualEntryPage extends Page
                 ->where('subject_id', $this->subjectId)
                 ->where('entry_type', 'manual')
                 ->first();
+
+            // Log existing data load
+            Log::info('Loading existing manual entry data', [
+                'result_root_id' => $this->resultRootId,
+                'class_id' => $this->classId,
+                'subject_id' => $this->subjectId,
+                'existing_entry_found' => $existingEntry ? true : false,
+                'processed_by' => Auth::id(),
+            ]);
             
             $this->existingData = $existingEntry ? json_decode($existingEntry->card_items, true) : [];
         }
