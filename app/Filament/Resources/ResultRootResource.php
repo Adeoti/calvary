@@ -85,7 +85,7 @@ class ResultRootResource extends Resource
                                     ->label('exam score columns')
                                     ->schema([
                                         TextInput::make('label')->label('Column Label')->placeholder('E.g. 1st CA')->required(),
-                                        TextInput::make('overall_score')->label('Overall Score')->placeholder('E.g. 100')->required(),
+                                        TextInput::make('overall_score')->label('Overall Score')->numeric()->placeholder('E.g. 100')->required(),
 
                                     ])
                                     ->columns(2)
