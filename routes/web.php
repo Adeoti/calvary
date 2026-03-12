@@ -4,6 +4,7 @@ use App\Models\SchoolClass;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HomeworkController;
+use App\Http\Controllers\ReportCardController;
 use App\Http\Controllers\ReportCardPdfController;
 use App\Http\Controllers\ResultController;
 use App\Http\Controllers\ResultUploadController;
@@ -20,17 +21,23 @@ use App\Http\Controllers\ResultUploadController;
 
 
 Route::middleware(['auth'])->group(function () {
-     // BROADSHEET ROUTES
-    Route::get('/admin/broadsheets/{record}/view', 
-        [App\Http\Controllers\BroadsheetController::class, 'view'])
+    // BROADSHEET ROUTES
+    Route::get(
+        '/admin/broadsheets/{record}/view',
+        [App\Http\Controllers\BroadsheetController::class, 'view']
+    )
         ->name('filament.admin.resources.broadsheets.view');
-    
-    Route::post('/admin/broadsheets/{record}/regenerate', 
-        [App\Http\Controllers\BroadsheetController::class, 'regenerate'])
+
+    Route::post(
+        '/admin/broadsheets/{record}/regenerate',
+        [App\Http\Controllers\BroadsheetController::class, 'regenerate']
+    )
         ->name('broadcast.regenerate');
-    
-    Route::get('/admin/broadsheets/{record}/download', 
-        [App\Http\Controllers\BroadsheetController::class, 'downloadPdf'])
+
+    Route::get(
+        '/admin/broadsheets/{record}/download',
+        [App\Http\Controllers\BroadsheetController::class, 'downloadPdf']
+    )
         ->name('broadcast.download');
     Route::post('/admin/result-uploads/manual-save', [ResultUploadController::class, 'saveManualEntry'])
         ->name('filament.admin.resources.result-uploads.manual-save');
@@ -47,6 +54,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/teacher-remark/{studentId}/{resultRootId}', [\App\Http\Controllers\TeacherRemarkController::class, 'getRemark'])
         ->name('teacher-remark.get');
+
+    Route::get('/report-cards/{record}', [ReportCardController::class, 'show'])
+        ->name('report-cards.show');
 
     // HOS remarks routes
     Route::post('/hos-remark/save', [\App\Http\Controllers\HOSRemarkController::class, 'store'])

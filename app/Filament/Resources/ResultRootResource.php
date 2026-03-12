@@ -133,7 +133,10 @@ class ResultRootResource extends Resource
                     ->button()
                     ->color('purple')
                     ->label('View Results')
-                    ->action(fn(ResultRoot $record) => redirect()->route('filament.admin.resources.result-roots.view-results', ['record' => $record->id])),
+                    ->url(fn(ResultRoot $record): string => route('report-cards.show', ['record' => $record->id]))
+                    ->openUrlInNewTab(),
+                // ->action(fn(ResultRoot $record) => redirect()->route('filament.admin.resources.result-roots.view-results', ['record' => $record->id])),
+
                 Tables\Actions\Action::make('CSV template')
                     ->label('Generate CSV Template')
                     ->icon('heroicon-s-arrow-down-tray')
