@@ -136,14 +136,16 @@ class ResultUploadResource extends Resource
                 Tables\Actions\Action::make('view_results')
                     ->label('View')
                     ->icon('heroicon-o-eye')
-                    ->url(
-                        fn(ResultUpload $record) =>
-                        route('filament.admin.resources.result-roots.view-results', [
-                            'record' => $record->result_root_id,
-                            'class' => $record->class_id,
-                            'subject' => $record->subject_id
-                        ])
-                    ),
+                    ->url(fn(ResultUpload $record): string => route('report-cards.show', ['record' => $record->result_root_id]))
+                    ->openUrlInNewTab(),
+                // ->url(
+                //     fn(ResultUpload $record) =>
+                //     route('filament.admin.resources.result-roots.view-results', [
+                //         'record' => $record->result_root_id,
+                //         'class' => $record->class_id,
+                //         'subject' => $record->subject_id
+                //     ])
+                // ),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -163,8 +165,8 @@ class ResultUploadResource extends Resource
             'index' => Pages\ListResultUploads::route('/'),
             'create' => Pages\CreateResultUpload::route('/create'),
             'edit' => Pages\EditResultUpload::route('/{record}/edit'),
-            
-            
+
+
         ];
     }
 }

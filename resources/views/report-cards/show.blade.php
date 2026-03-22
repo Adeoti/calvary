@@ -366,15 +366,18 @@
                                             <div id="teacher-remark-container-{{ $studentId }}">
                                                 @php
                                                     $existingRemark = $teacherRemarks[$studentId]->remark ?? null;
+
+                                                    echo "<script>console.log('Existing remark for student ID {$studentId}: " . ($existingRemark ?? 'null') . "');</script>";
                                                 @endphp
 
                                                 @if ($existingRemark)
+                                                    
                                                     <div class="existing-remark"
                                                         id="existing-remark-{{ $studentId }}">
                                                         <span>{{ $existingRemark }}</span>
                                                         <button type="button"
                                                             onclick="editRemark({{ $studentId }})"
-                                                            class="ml-2 text-blue-600 hover:text-blue-800 text-sm print-remove">
+                                                            class="ml-2 text-blue-600 hover:text-blue-800 text-sm">
                                                             Edit
                                                         </button>
                                                     </div>
@@ -417,7 +420,7 @@
                                                         <span>{{ $existingHOSRemark }}</span>
                                                         <button type="button"
                                                             onclick="editHOSRemark({{ $studentId }})"
-                                                            class="ml-2 text-blue-600 hover:text-blue-800 text-sm print-remove">
+                                                            class="ml-2 text-blue-600 hover:text-blue-800 text-sm ">
                                                             Edit
                                                         </button>
                                                     </div>
@@ -508,7 +511,7 @@
                                                         <span></span>
                                                         <button type="button"
                                                             onclick="editHOSRemark({{ $studentId }})"
-                                                            class="ml-2 text-blue-600 hover:text-blue-800 text-sm print-remove">
+                                                            class="ml-2 text-blue-600 hover:text-blue-800 text-sm ">
                                                             Edit
                                                         </button>
                                                     </div>
