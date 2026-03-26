@@ -203,11 +203,12 @@
                 {{-- Render cards for each student --}}
                 @foreach ($students as $studentId => $studentData)
                     {{-- Added class "student-report-card" for print selection --}}
-                    <div class="student-report-card border p-6 mb-6 rounded-lg shadow-lg" style="margin-top:15px; margin-bottom:15px;">
+                    <div class="student-report-card border p-6 mb-6 rounded-lg shadow-lg"
+                        style="margin-top:15px; margin-bottom:15px;">
                         {{-- Header with logos --}}
                         <div class="mb-4 flex justify-between border p-2">
                             <div class="school_logo">
-                               
+
                                 <img src="{{ Storage::url($school_logo) }}" alt="Logo" class="logo-img"
                                     style="height: 70px; border-radius: 10%;">
                             </div>
@@ -220,7 +221,7 @@
                             <div class="student_passport">
                                 <img src="{{ Storage::url($studentData['info']->passport) }}" alt="Passport"
                                     class="logo-img" style="height: 70px; border-radius: 10%;">
-                                
+
                             </div>
                         </div>
 
@@ -229,9 +230,9 @@
                             <div>
                                 <h2 class="text-xl font-bold">{{ $studentData['info']->name }}</h2>
                                 <p>Email: {{ $studentData['info']->email }}</p>
-                                <p>Attendance:
+                                {{-- <p>Attendance:
                                     {{ Attendance::where('result_root_id', $record->id)->where('student_id', $studentData['info']->id)->count() }}
-                                </p>
+                                </p> --}}
                                 <p class="contact-item"><span class="bold">Class:</span> {{ $class->name ?? 'N/A' }}
                                 </p>
                             </div>
@@ -252,9 +253,9 @@
                                     {{ $student->student->roll_number ?? 'N/A' }}</p>
                                 <p class="detail-item"><span class="bold">Parent:</span>
                                     {{ $student->student->guardian_name ?? 'N/A' }}</p>
-                                <p>Times present:
+                                {{-- <p>Times present:
                                     {{ Attendance::where('status', 'Present')->where('result_root_id', $record->id)->where('student_id', $studentData['info']->id)->count() }}
-                                </p>
+                                </p> --}}
                             </div>
 
                             <div class="contact-column">
@@ -285,18 +286,54 @@
                             </thead>
                             <tbody>
                                 @foreach ($studentData['subjects'] as $subject)
+                                    @php
+                                        $allZero = true;
+
+                                        foreach ($dynamicHeaders as $header) {
+                                            $value = $subject['scores'][$header] ?? null;
+
+                                            // Normalize value (this is the key fix)
+                                            $normalized = trim((string) $value);
+
+                                            if ($normalized !== '' && (float) $normalized != 0) {
+                                                $allZero = false;
+                                                break;
+                                            }
+                                        }
+                                    @endphp
+
                                     <tr>
                                         <td class="border px-2 py-1">{{ $subject['name'] }}</td>
+
                                         @foreach ($dynamicHeaders as $header)
-                                            <td class="border px-2 py-1">{{ $subject['scores'][$header] ?? 'N/A' }}
+                                            <td class="border px-2 py-1">
+                                                {{ $allZero ? '——' : $subject['scores'][$header] ?? 'N/A' }}
                                             </td>
                                         @endforeach
-                                        <td class="border px-2 py-1">{{ $subject['total'] }}</td>
-                                        <td class="border px-2 py-1">{{ number_format($subject['average'], 2) }}</td>
-                                        <td class="border px-2 py-1">{{ $subject['highest'] }}</td>
-                                        <td class="border px-2 py-1">{{ $subject['lowest'] }}</td>
-                                        <td class="border px-2 py-1">{{ $subject['grade'] }}</td>
-                                        <td class="border px-2 py-1">{{ $subject['remark'] }}</td>
+
+                                        <td class="border px-2 py-1">
+                                            {{ $allZero ? '——' : $subject['total'] }}
+                                        </td>
+
+                                        <td class="border px-2 py-1">
+                                            {{ $allZero ? '——' : number_format($subject['average'], 2) }}
+                                        </td>
+
+                                        <td class="border px-2 py-1">
+                                            {{ $allZero ? '——' : $subject['highest'] }}
+                                        </td>
+
+                                        <td class="border px-2 py-1">
+                                            {{ $allZero ? '——' : $subject['lowest'] }}
+                                        </td>
+
+                                        <td class="border px-2 py-1">
+                                            {{ $allZero ? '——' : $subject['grade'] }}
+                                        </td>
+
+                                        <td class="border px-2 py-1">
+                                            {{ $allZero ? '——' : $subject['remark'] }}
+                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -366,12 +403,9 @@
                                             <div id="teacher-remark-container-{{ $studentId }}">
                                                 @php
                                                     $existingRemark = $teacherRemarks[$studentId]->remark ?? null;
-
-                                                    echo "<script>console.log('Existing remark for student ID {$studentId}: " . ($existingRemark ?? 'null') . "');</script>";
                                                 @endphp
 
                                                 @if ($existingRemark)
-                                                    
                                                     <div class="existing-remark"
                                                         id="existing-remark-{{ $studentId }}">
                                                         <span>{{ $existingRemark }}</span>
@@ -610,7 +644,7 @@
                                     <td>
                                         <div style="padding:15px;">
                                             {{-- Principal signature image --}}
-                                           <img src="{{ Storage::url($principal_signature) }}" alt="signature"
+                                            <img src="{{ Storage::url($principal_signature) }}" alt="signature"
                                                 class="logo-img" style="height: 50px;">
                                             {{ $schoolDetails['principal_name'] }}
                                             <br>
@@ -863,14 +897,17 @@
                     const clone = card.cloneNode(true);
 
                     // Remove all interactive elements (buttons, inputs, error messages, edit forms)
-                    clone.querySelectorAll('.print-remove, button, input, [id^="remark-error-"], [id^="remark-success-"], [id^="hos-remark-error-"], [id^="hos-remark-success-"], [id^="edit-remark-form-"], [id^="edit-hos-remark-form-"]')
+                    clone.querySelectorAll(
+                            '.print-remove, button, input, [id^="remark-error-"], [id^="remark-success-"], [id^="hos-remark-error-"], [id^="hos-remark-success-"], [id^="edit-remark-form-"], [id^="edit-hos-remark-form-"]'
+                        )
                         .forEach(el => el.remove());
 
                     // Ensure existing remark spans are visible
-                    clone.querySelectorAll('[id^="existing-remark-"], [id^="existing-hos-remark-"]').forEach(el => {
-                        el.style.display = 'block';
-                        el.classList.remove('hidden');
-                    });
+                    clone.querySelectorAll('[id^="existing-remark-"], [id^="existing-hos-remark-"]').forEach(
+                        el => {
+                            el.style.display = 'block';
+                            el.classList.remove('hidden');
+                        });
 
                     // Write the cleaned card HTML
                     printWindow.document.write(clone.outerHTML);

@@ -68,14 +68,11 @@ foreach ($resultUploads as $resultUpload) {
                             </div>
                             <div class="text-center">
                                 <h2 class="font-bold" style="font-size: 2.7rem;">{{ $schoolDetails['school_name'] }}
-
                                 </h2>
-                                <p class="detail-item"><span class="bold"
-                                        style="font-weight: 600; color:darkmagenta;">{{ $record->name }}</span></p>
                                 {{-- <p><b>Address: </b> {{ $schoolDetails['school_address'] }}</p> --}}
-                                {{-- <p><b>Address: </b> {{ $record->section_address ?? $schoolDetails['school_address'] }}
+                                <p><b>Address: </b> {{ $record->section_address ?? $schoolDetails['school_address'] }}
                                 </p>
-                                <p><b>Phone:</b> {{ $schoolDetails['school_phone'] }}</p> --}}
+                                <p><b>Phone:</b> {{ $schoolDetails['school_phone'] }}</p>
                             </div>
                             <div class="student_passport">
                                 <img src="{{ Storage::url($studentData['info']->passport) }}" alt="Passport"
@@ -88,13 +85,10 @@ foreach ($resultUploads as $resultUpload) {
 
                             <div>
                                 <h2 class="text-xl font-bold">{{ $studentData['info']->name }}</h2>
-                                {{-- <p>Student ID: {{ $studentData['info']->id }}</p> --}}
+                                <p>Student ID: {{ $studentData['info']->id }}</p>
                                 <p>Email: {{ $studentData['info']->email }}</p>
-                                <p>Attendance:
-                                    {{ App\Models\Attendance::where('result_root_id', $record->id)->where('student_id', $studentData['info']->id)->count() }}
-                                </p>
-                                <p class="contact-item"><span class="bold">Class:</span> {{ $class->name ?? 'N/A' }}
-                                </p>
+                                {{-- <p>Attendance: {{ App\Models\Attendance::where('result_root_id', $record->id)->where('student_id', $studentData['info']->id)->count() }}</p> --}}
+
                             </div>
 
                             @php
@@ -115,23 +109,21 @@ foreach ($resultUploads as $resultUpload) {
 
                             <!-- Student Details Column -->
                             <div class="details-column">
-
-                                <p class="detail-item"><span class="bold">Admission Number:</span>
+                                <p class="detail-item"><span class="bold"
+                                        style="font-weight: 600; color:darkmagenta;">{{ $record->name }}</span></p>
+                                <p class="detail-item"><span class="bold">Roll Number:</span>
                                     {{ $student->student->roll_number ?? 'N/A' }}</p>
-                                <p class="detail-item"><span class="bold">Parent:</span>
+                                <p class="detail-item"><span class="bold">Guardian:</span>
                                     {{ $student->student->guardian_name ?? 'N/A' }}</p>
-                                {{-- <p class="detail-item"><span class="bold">Class Teacher:</span>
-                                    {{ $record->teacher->name ?? 'N/A' }}</p> --}}
-                                <p>Times present:
-                                    {{ App\Models\Attendance::where('status', 'Present')->where('result_root_id', $record->id)->where('student_id', $studentData['info']->id)->count() }}
-                                </p>
+                                {{-- <p>Times present: {{ App\Models\Attendance::where('status', 'Present')->where('result_root_id', $record->id)->where('student_id', $studentData['info']->id)->count() }}</p> --}}
                             </div>
 
                             <!-- Student Contact Column -->
                             <div class="contact-column">
 
 
-
+                                <p class="contact-item"><span class="bold">Class:</span> {{ $class->name ?? 'N/A' }}
+                                </p>
                                 <p class="contact-item"><span class="bold">Number In Class:</span>
                                     {{ $number_in_class ?? 'N/A' }}</p>
                                 <p class="contact-item">
@@ -162,19 +154,53 @@ foreach ($resultUploads as $resultUpload) {
                             </thead>
                             <tbody>
                                 @foreach ($studentData['subjects'] as $subject)
+                                    @php
+                                        $allZero = true;
+
+                                        foreach ($dynamicHeaders as $header) {
+                                            $value = $subject['scores'][$header] ?? null;
+
+                                            // Normalize value (this is the key fix)
+                                            $normalized = trim((string) $value);
+
+                                            if ($normalized !== '' && (float) $normalized != 0) {
+                                                $allZero = false;
+                                                break;
+                                            }
+                                        }
+                                    @endphp
+
                                     <tr>
                                         <td class="border px-2 py-1">{{ $subject['name'] }}</td>
+
                                         @foreach ($dynamicHeaders as $header)
-                                            <td class="border px-2 py-1" style="text-align: center;">
-                                                {{ $subject['scores'][$header] ?? 'N/A' }}</td>
+                                            <td class="border px-2 py-1">
+                                                {{ $allZero ? '——' : $subject['scores'][$header] ?? 'N/A' }}
+                                            </td>
                                         @endforeach
-                                        <td class="border px-2 py-1">{{ $subject['total'] }}</td>
-                                        <td class="border px-2 py-1">{{ number_format($subject['average'], 2) }}</td>
-                                        <td class="border px-2 py-1">{{ $subject['highest'] }}</td>
-                                        <td class="border px-2 py-1">{{ $subject['lowest'] }}</td>
-                                        <td class="border px-2 py-1" style="text-align: center;">
-                                            {{ $subject['grade'] }}</td>
-                                        <td class="border px-2 py-1" style="font-size: 13px;">{{ $subject['remark'] }}
+
+                                        <td class="border px-2 py-1">
+                                            {{ $allZero ? '——' : $subject['total'] }}
+                                        </td>
+
+                                        <td class="border px-2 py-1">
+                                            {{ $allZero ? '——' : number_format($subject['average'], 2) }}
+                                        </td>
+
+                                        <td class="border px-2 py-1">
+                                            {{ $allZero ? '——' : $subject['highest'] }}
+                                        </td>
+
+                                        <td class="border px-2 py-1">
+                                            {{ $allZero ? '——' : $subject['lowest'] }}
+                                        </td>
+
+                                        <td class="border px-2 py-1">
+                                            {{ $allZero ? '——' : $subject['grade'] }}
+                                        </td>
+
+                                        <td class="border px-2 py-1">
+                                            {{ $allZero ? '——' : $subject['remark'] }}
                                         </td>
                                     </tr>
                                 @endforeach
@@ -216,104 +242,56 @@ foreach ($resultUploads as $resultUpload) {
                                         <td>{{ number_format(array_sum(array_column($studentData['subjects'], 'total')) / count($studentData['subjects']), 2) }}
                                         </td>
                                     </tr>
-                                    {{-- Add this row to the remarks table --}}
                                     <tr>
-                                        <td style="font-weight:600; width: 30%;" class="border px-2 py-1">Class
-                                            Teacher's Remark</td>
-                                        <td>
-                                            @if ($teacherRemark && $teacherRemark->remark)
-                                                <div class="teacher-remark" style="color: #2d3748; font-style: normal;">
-                                                    {{ $teacherRemark->remark }}
-
-                                                </div>
-                                            @else
-                                                <div style="color: #a0aec0; font-style: italic;">
-                                                    No remark added yet by class teacher
-                                                </div>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="font-weight:600; width: 30%;" class="border px-2 py-1">HOS's Remarks
+                                        <td style="font-weight:600; width: 30%;" class="border px-2 py-1">HOD's Remarks
                                         </td>
                                         <td>
-                                            @if ($hosRemark && $hosRemark->remark)
-                                                <div class="hos-remark" style="color: #2d3748; font-style: normal;">
-                                                    {{ $hosRemark->remark }}
-                                                </div>
-                                            @else
-                                                @php
-                                                    // Generate default comment (same logic as before)
-                                                    $overallAverage = round(
-                                                        array_sum(array_column($studentData['subjects'], 'total')) /
-                                                            count($studentData['subjects']),
-                                                        2,
-                                                    );
-                                                    $presentCount = App\Models\Attendance::where('status', 'Present')
-                                                        ->where('result_root_id', $record->id)
-                                                        ->where('student_id', $studentData['info']->id)
-                                                        ->count();
-                                                    $totalDays = $record->total_school_days ?? 120;
-                                                    $attendancePercentage =
-                                                        $totalDays > 0
-                                                            ? round(($presentCount / $totalDays) * 100, 2)
-                                                            : 0;
-
-                                                    // Generate default comment
-                                                    if ($overallAverage >= 90) {
-                                                        $comments = [
-                                                            'An outstanding performance. Keep maintaining this high academic standard.',
-                                                            'Excellent result! You have shown great commitment and hard work. Well done.',
-                                                            'A brilliant performance. Continue to remain focused and disciplined.',
-                                                            'Exceptional progress. Keep up the excellent attitude towards learning.',
-                                                        ];
-                                                        $defaultComment = $comments[array_rand($comments)];
-                                                    } elseif ($overallAverage >= 80) {
-                                                        $comments = [
-                                                            'A very good result. With a little more effort, you will reach the top.',
-                                                            'Strong performance. Keep putting in your best.',
-                                                            'You worked hard this term. Maintain this good effort.',
-                                                            'A commendable performance. Continue improving.',
-                                                        ];
-                                                        $defaultComment = $comments[array_rand($comments)];
-                                                    } elseif ($overallAverage >= 70) {
-                                                        $comments = [
-                                                            'A good performance. You can do even better with more consistency.',
-                                                            'You tried well. Aim for higher achievement next term.',
-                                                            'Your work is good, but there is room for improvement.',
-                                                            'Keep improving your study habits for better results.',
-                                                        ];
-                                                        $defaultComment = $comments[array_rand($comments)];
-                                                    } elseif ($overallAverage >= 60) {
-                                                        $comments = [
-                                                            'An average performance. You need to work harder next term.',
-                                                            'Fair performance. Focus more during lessons to improve.',
-                                                            'You have potential; put in more effort to achieve better results.',
-                                                            'Encouraged to work harder. Improvement is needed.',
-                                                        ];
-                                                        $defaultComment = $comments[array_rand($comments)];
-                                                    } elseif ($overallAverage >= 50) {
-                                                        $comments = [
-                                                            'Below expected performance. Greater effort and concentration are needed.',
-                                                            'Needs improvement. Encourage more seriousness with studies.',
-                                                            'Work harder to avoid falling behind.',
-                                                            'Performance is weak; more dedication is required.',
-                                                        ];
-                                                        $defaultComment = $comments[array_rand($comments)];
-                                                    } else {
-                                                        $comments = [
-                                                            'Performance is poor. The pupil must work much harder next term.',
-                                                            'A weak result. Encourage extra support and more study time.',
-                                                            'Much improvement is needed across all subjects.',
-                                                            'The performance is far below expectation. Serious effort is required.',
-                                                        ];
-                                                        $defaultComment = $comments[array_rand($comments)];
-                                                    }
-                                                @endphp
-                                                <div style="color: #a0aec0; font-style: normal;">
-                                                    {{ $defaultComment }}
-                                                </div>
-                                            @endif
+                                            @php
+                                                $overallAverage = round(
+                                                    array_sum(array_column($studentData['subjects'], 'total')) /
+                                                        count($studentData['subjects']),
+                                                    2,
+                                                );
+                                                if ($overallAverage >= 90) {
+                                                    //Let $comment have random value like 'Excellent result!', or 'Outstanding result!', or 'Super performance!'
+                                                    $comments = [
+                                                        'Excellent result!',
+                                                        'Outstanding result!',
+                                                        'Super performance!',
+                                                    ];
+                                                    $comment = $comments[array_rand($comments)];
+                                                } elseif ($overallAverage >= 80) {
+                                                    $comment = 'Very good result!';
+                                                    $comments = [
+                                                        'Very good result!',
+                                                        'Keep it up!',
+                                                        'Keep up your brilliance!',
+                                                    ];
+                                                    $comment = $comments[array_rand($comments)];
+                                                } elseif ($overallAverage >= 70) {
+                                                    $comments = [
+                                                        'Good result!',
+                                                        'Keep it up!',
+                                                        'Try harder next time!',
+                                                    ];
+                                                    $comment = $comments[array_rand($comments)];
+                                                } elseif ($overallAverage >= 60) {
+                                                    $comments = [
+                                                        'Fair result!',
+                                                        'You can do more next time!',
+                                                        'Keep it up!',
+                                                    ];
+                                                    $comment = $comments[array_rand($comments)];
+                                                } else {
+                                                    $comments = [
+                                                        'Needs improvement!',
+                                                        'Try harder next time!',
+                                                        'Stay focused in your subjects!',
+                                                    ];
+                                                    $comment = $comments[array_rand($comments)];
+                                                }
+                                            @endphp
+                                            {{ $comment }}
                                         </td>
                                     </tr>
 
@@ -460,13 +438,13 @@ foreach ($resultUploads as $resultUpload) {
                 width: 100% !important;
             }
 
-            /* tr:nth-child(even) {
+            tr:nth-child(even) {
                 background-color: #f2f2f2;
             }
 
             tr:nth-child(odd) {
                 background-color: #d2eafd;
-            } */
+            }
 
             table.skills-behaviours td,
             table.skills-behaviours th {

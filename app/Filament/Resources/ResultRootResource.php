@@ -58,6 +58,15 @@ class ResultRootResource extends Resource
                         DatePicker::make('next_term')
                             ->required()
                             ->label('Next Term Begins'),
+
+                        Select::make('teacher_id')
+                            ->label('Class Teacher')
+                            ->options(function () {
+                                return \App\Models\User::whereHas('teacher')->pluck('name', 'id');
+                            })
+                            ->searchable()
+                            ->required(),
+
                         Forms\Components\Textarea::make('description')
                             ->required()
                             ->columnSpanFull(),
@@ -92,7 +101,7 @@ class ResultRootResource extends Resource
                                     ->columnSpanFull(),
                             ])
 
-                    ])->columns(3),
+                    ])->columns(4),
             ]);
     }
 
